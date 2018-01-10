@@ -27,7 +27,8 @@ namespace Polyclinic_Finder
         {
             InitializeComponent();
 
-            List<Polyclinic> polyclinics = new List<Polyclinic>();
+            Map.Navigate("https://www.google.co.in/maps");
+            List<Polyclinic> polyclinics;
 
             string data;
 
@@ -42,25 +43,31 @@ namespace Polyclinic_Finder
                 //MessageBox.Show(convertedJson);
             }
 
-            Polyclinic[] a = JsonConvert.DeserializeObject<Polyclinic[]>(data);
+            polyclinics = JsonConvert.DeserializeObject<List<Polyclinic>>(data);
         }
 
         private void searchButton_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            if (searchButton.Text == "Ваш адресс...")
+            if (searchText.Text == "Ваш адресс...")
             {
-                searchButton.Text = "";
-                searchButton.Foreground = Brushes.Black;
+                searchText.Text = "";
+                searchText.Foreground = Brushes.Black;
             }
         }
 
         private void searchButton_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (searchButton.Text == "")
+            if (searchText.Text == "")
             {
-                searchButton.Text = "Ваш адресс...";
-                searchButton.Foreground = Brushes.Gray;
+                searchText.Text = "Ваш адресс...";
+                searchText.Foreground = Brushes.Gray;
             }
+        }
+
+        private void SeachButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (searchText.Text == "Ваш адресс...")
+                MessageBox.Show("Введите адрес!");
         }
     }
 }
