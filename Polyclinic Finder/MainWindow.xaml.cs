@@ -28,8 +28,12 @@ namespace Polyclinic_Finder
             InitializeComponent();
 
             Map.Navigate("https://www.google.co.in/maps");
-            List<Polyclinic> polyclinics;
+            List<Polyclinic> polyclinics = GetData();
+        }
 
+        public List<Polyclinic> GetData()
+        {
+            List<Polyclinic> policData = new List<Polyclinic>();
             string data;
 
             using (WebClient client = new WebClient())
@@ -43,10 +47,12 @@ namespace Polyclinic_Finder
                 //MessageBox.Show(convertedJson);
             }
 
-            polyclinics = JsonConvert.DeserializeObject<List<Polyclinic>>(data);
+            policData = JsonConvert.DeserializeObject<List<Polyclinic>>(data);
+
+            return policData;
         }
 
-        private void searchButton_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void SearchButton_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             if (searchText.Text == "Ваш адресс...")
             {
@@ -55,7 +61,7 @@ namespace Polyclinic_Finder
             }
         }
 
-        private void searchButton_LostFocus(object sender, RoutedEventArgs e)
+        private void SearchButton_LostFocus(object sender, RoutedEventArgs e)
         {
             if (searchText.Text == "")
             {
@@ -64,10 +70,14 @@ namespace Polyclinic_Finder
             }
         }
 
-        private void SeachButton_Click(object sender, RoutedEventArgs e)
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             if (searchText.Text == "Ваш адресс...")
                 MessageBox.Show("Введите адрес!");
+            else
+            {
+                Map.Navigate("https://www.google.co.in/maps?q=" + searchText.Text);
+            }
         }
     }
 }
