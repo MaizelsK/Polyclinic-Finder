@@ -22,5 +22,11 @@ namespace Polyclinic_Finder
         public string LeaderFIO { get; set; }
         [JsonProperty("vremia_priema")]
         public string RecieveTime { get; set; }
+
+        public override string ToString()
+        {
+            
+            return Name;
+        }
     }
 }

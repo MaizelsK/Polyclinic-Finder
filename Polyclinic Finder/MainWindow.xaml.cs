@@ -27,8 +27,10 @@ namespace Polyclinic_Finder
         {
             InitializeComponent();
 
-            Map.Navigate("https://www.google.co.in/maps");
+            Chrome.Address = "https://www.google.co.in/maps";
             List<Polyclinic> polyclinics = GetData();
+
+            polyclinicList.ItemsSource = polyclinics;
         }
 
         public List<Polyclinic> GetData()
@@ -43,8 +45,6 @@ namespace Polyclinic_Finder
                 var json = client.DownloadString(@"http://data.egov.kz/api/v2/emhanalar/v3?pretty");
 
                 data = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(json));
-
-                //MessageBox.Show(convertedJson);
             }
 
             policData = JsonConvert.DeserializeObject<List<Polyclinic>>(data);
@@ -76,8 +76,13 @@ namespace Polyclinic_Finder
                 MessageBox.Show("Введите адрес!");
             else
             {
-                Map.Navigate("https://www.google.co.in/maps?q=" + searchText.Text);
+                Chrome.Address = "https://www.google.co.in/maps?q=" + searchText.Text;
             }
+        }
+
+        private void PolyclinicList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Chrome.Address = "https://www.google.co.in/maps?q=" + polyclinicList.SelectedItem.ToString();
         }
     }
 }

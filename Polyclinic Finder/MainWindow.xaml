@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Polyclinic_Finder"
+        xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         mc:Ignorable="d"
         Title="Polyclinic Finder" Height="600" Width="1200" WindowStartupLocation="Manual" Visibility="Visible">
     <Grid>
@@ -11,6 +11,7 @@
             <DockPanel DockPanel.Dock="Left" Width="250" LastChildFill="True">
                 <Rectangle DockPanel.Dock="Right" Width="2" Fill="#FF673AB7"/>
                 <StackPanel DockPanel.Dock="Top">
+                    <ListBox x:Name="polyclinicList" SelectionChanged="PolyclinicList_SelectionChanged"/>
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Bottom">
@@ -21,7 +22,8 @@
             </DockPanel>
 
             <Frame DockPanel.Dock="Right"/>
-            <WebBrowser Name="Map" DockPanel.Dock="Right"/>
+            <!--<WebBrowser Name="Map" DockPanel.Dock="Right"/>-->
+            <cefSharp:ChromiumWebBrowser Name="Chrome" DockPanel.Dock="Right"/>
         </DockPanel>
 
     </Grid>
