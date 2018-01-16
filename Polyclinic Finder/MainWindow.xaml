@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
+        xmlns:gmaps="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
         mc:Ignorable="d"
         Title="Polyclinic Finder" Height="600" Width="1200" WindowStartupLocation="Manual" Visibility="Visible">
     <Grid>
@@ -23,7 +24,8 @@
 
             <Frame DockPanel.Dock="Right"/>
             <!--<WebBrowser Name="Map" DockPanel.Dock="Right"/>-->
-            <cefSharp:ChromiumWebBrowser Name="Chrome" DockPanel.Dock="Right"/>
+            <!--<cefSharp:ChromiumWebBrowser Name="Chrome" DockPanel.Dock="Right"/>-->
+            <gmaps:GMapControl DockPanel.Dock="Right" x:Name="mapView" />
         </DockPanel>
 
     </Grid>

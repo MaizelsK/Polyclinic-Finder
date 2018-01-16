@@ -15,6 +15,8 @@ using System.Windows.Shapes;
 using System.IO;
 using Newtonsoft.Json;
 using System.Net;
+using System.Xml.Linq;
+using GMap.NET.WindowsPresentation;
 
 namespace Polyclinic_Finder
 {
@@ -27,10 +29,24 @@ namespace Polyclinic_Finder
         {
             InitializeComponent();
 
-            Chrome.Address = "https://www.google.co.in/maps";
+            //Chrome.Address = "https://www.google.co.in/maps";
             List<Polyclinic> polyclinics = GetData();
 
             polyclinicList.ItemsSource = polyclinics;
+
+            string requestUri = string.Format("http://maps.googleapis.com/maps/api/geocode/xml?address={0}&sensor=false", Uri.EscapeDataString(polyclinicList.Items[0].ToString()));
+
+            WebRequest request = WebRequest.Create(requestUri);
+            WebResponse response = request.GetResponse();
+            XDocument xdoc = XDocument.Load(response.GetResponseStream());
+
+            XElement result = xdoc.Element("GeocodeResponse").Element("result");
+            XElement locationElement = result.Element("geometry").Element("location");
+            XElement lat = locationElement.Element("lat");
+            XElement lng = locationElement.Element("lng");
+
+            double latitude = double.Parse(lat.Value.Replace('.', ','));
+            double longitude = double.Parse(lng.Value.Replace('.', ','));
         }
 
         public List<Polyclinic> GetData()
@@ -76,13 +92,13 @@ namespace Polyclinic_Finder
                 MessageBox.Show("Введите адрес!");
             else
             {
-                Chrome.Address = "https://www.google.co.in/maps?q=" + searchText.Text;
+                //Chrome.Address = "https://www.google.co.in/maps?q=" + searchText.Text;
             }
         }
 
         private void PolyclinicList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Chrome.Address = "https://www.google.co.in/maps?q=" + polyclinicList.SelectedItem.ToString();
+            //Chrome.Address = "https://www.google.co.in/maps?q=" + polyclinicList.SelectedItem.ToString();
         }
     }
 }

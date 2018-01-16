@@ -25,8 +25,7 @@ namespace Polyclinic_Finder
 
         public override string ToString()
         {
-            
-            return Name;
+            return Address;
         }
     }
 }
