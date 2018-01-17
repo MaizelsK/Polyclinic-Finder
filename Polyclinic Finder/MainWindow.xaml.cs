@@ -17,6 +17,10 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Xml.Linq;
 using GMap.NET.WindowsPresentation;
+using GMap.NET;
+using GMap.NET.MapProviders;
+using GMap.NET.WindowsPresentation;
+using GMap.NET.WindowsForms.Markers;
 
 namespace Polyclinic_Finder
 {
@@ -99,6 +103,49 @@ namespace Polyclinic_Finder
         private void PolyclinicList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //Chrome.Address = "https://www.google.co.in/maps?q=" + polyclinicList.SelectedItem.ToString();
+            float lat = 0;
+            float lng = 0;
+
+            GeoCoderStatusCode status;
+            PointLatLng? point = GMapProviders.GoogleMap.GetPoint(polyclinicList.SelectedItem.ToString(), out status);
+            if (status == GeoCoderStatusCode.G_GEO_SUCCESS && point != null)
+            {
+                lat = (float)point.Value.Lat;
+                lng = (float)point.Value.Lng;
+            }
+
+            GMapMarker marker = new GMapMarker(new PointLatLng(lat, lng));
+            marker.Shape = new Ellipse
+            {
+                Width = 10,
+                Height = 10,
+                Stroke = Brushes.Black,
+                StrokeThickness = 3
+            };
+
+            mapView.Markers.Add(marker);
+
+        }
+
+        private void MapView_Loaded(object sender, RoutedEventArgs e)
+        {
+            GMap.NET.GMaps.Instance.Mode = GMap.NET.AccessMode.ServerAndCache;
+
+            mapView.MapProvider = GMap.NET.MapProviders.OpenStreetMapProvider.Instance;
+            mapView.MinZoom = 4;
+            mapView.MaxZoom = 17;
+
+            mapView.Zoom = 11;
+
+            mapView.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
+
+            mapView.CanDragMap = true;
+
+            mapView.DragButton = MouseButton.Left;
+
+            mapView.ShowCenter = false;
+
+            mapView.Position = new GMap.NET.PointLatLng(51.1801, 71.44598);
         }
     }
 }
