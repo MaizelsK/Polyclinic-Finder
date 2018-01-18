@@ -21,6 +21,9 @@ using GMap.NET;
 using GMap.NET.MapProviders;
 using GMap.NET.WindowsPresentation;
 using GMap.NET.WindowsForms.Markers;
+using System.Globalization;
+using Yandex;
+using Newtonsoft.Json;
 
 namespace Polyclinic_Finder
 {
@@ -38,19 +41,19 @@ namespace Polyclinic_Finder
 
             polyclinicList.ItemsSource = polyclinics;
 
-            string requestUri = string.Format("http://maps.googleapis.com/maps/api/geocode/xml?address={0}&sensor=false", Uri.EscapeDataString(polyclinicList.Items[0].ToString()));
+            string requestUri = string.Format("https://geocode-maps.yandex.ru/1.x/?format=json&geocode=" + "Астана, проспект Республика, дом 50");
 
             WebRequest request = WebRequest.Create(requestUri);
-            WebResponse response = request.GetResponse();
-            XDocument xdoc = XDocument.Load(response.GetResponseStream());
+            WebResponse response = request.GetResponse(); //XDocument.Load(response.GetResponseStream());
+            JsonTextReader reader = new JsonTextReader(new StringReader(response.ToString()));
+            //XElement result = xdoc.Element("ymaps");//.Element("featureMember");
+            //XElement locationElement = result.Element("GeoObject").Element("Point").Element("pos");
+            //XElement lat = locationElement.Element("lat");
+            //XElement lng = locationElement.Element("lng");
 
-            XElement result = xdoc.Element("GeocodeResponse").Element("result");
-            XElement locationElement = result.Element("geometry").Element("location");
-            XElement lat = locationElement.Element("lat");
-            XElement lng = locationElement.Element("lng");
-
-            double latitude = double.Parse(lat.Value.Replace('.', ','));
-            double longitude = double.Parse(lng.Value.Replace('.', ','));
+            //double latitude = 
+            //double longitude = 
+            
         }
 
         public List<Polyclinic> GetData()
@@ -96,7 +99,42 @@ namespace Polyclinic_Finder
                 MessageBox.Show("Введите адрес!");
             else
             {
-                //Chrome.Address = "https://www.google.co.in/maps?q=" + searchText.Text;
+                //Chrome.Address = "https://www.google.co.in/maps?q=" + searchText.Text;\
+
+                double lat = 0;
+                double lng = 0;
+
+                //GeoCoderStatusCode status;
+                //PointLatLng? point = GMapProviders.GoogleMap.GetPoint(searchText.Text, out status);
+                //if (status == GeoCoderStatusCode.G_GEO_SUCCESS && point != null)
+                //{
+                //    lat = point.Value.Lat;
+                //    lng = point.Value.Lng;
+                //}
+
+
+                WebRequest request = WebRequest
+                    .Create("http://maps.googleapis.com/maps/api/geocode/xml?sensor=false&address=" + searchText.Text);
+
+                using (WebResponse response = request.GetResponse())
+                {
+                    using (Stream stream = response.GetResponseStream())
+                    {
+                        XDocument document = XDocument.Load(new StreamReader(stream));
+
+                        XElement longitudeElement = document.Descendants("lng").FirstOrDefault();
+                        XElement latitudeElement = document.Descendants("lat").FirstOrDefault();
+
+                        if (longitudeElement != null && latitudeElement != null)
+                        {
+                            lng = Double.Parse(longitudeElement.Value, CultureInfo.InvariantCulture);
+                            lat = Double.Parse(latitudeElement.Value, CultureInfo.InvariantCulture);
+                        }
+                    }
+                }
+
+                mapView.Position = new GMap.NET.PointLatLng(lat, lng);
+                mapView.Zoom = 24;
             }
         }
 
@@ -107,7 +145,7 @@ namespace Polyclinic_Finder
             float lng = 0;
 
             GeoCoderStatusCode status;
-            PointLatLng? point = GMapProviders.GoogleMap.GetPoint(polyclinicList.SelectedItem.ToString(), out status);
+            PointLatLng? point = GMapProviders.GoogleSatelliteMap.GetPoint(polyclinicList.SelectedItem.ToString(), out status);
             if (status == GeoCoderStatusCode.G_GEO_SUCCESS && point != null)
             {
                 lat = (float)point.Value.Lat;
@@ -124,14 +162,13 @@ namespace Polyclinic_Finder
             };
 
             mapView.Markers.Add(marker);
-
         }
 
         private void MapView_Loaded(object sender, RoutedEventArgs e)
         {
             GMap.NET.GMaps.Instance.Mode = GMap.NET.AccessMode.ServerAndCache;
 
-            mapView.MapProvider = GMap.NET.MapProviders.OpenStreetMapProvider.Instance;
+            mapView.MapProvider = GMap.NET.MapProviders.YandexMapProvider.Instance;
             mapView.MinZoom = 4;
             mapView.MaxZoom = 17;
 
@@ -143,7 +180,7 @@ namespace Polyclinic_Finder
 
             mapView.DragButton = MouseButton.Left;
 
-            mapView.ShowCenter = false;
+            mapView.ShowCenter = true;
 
             mapView.Position = new GMap.NET.PointLatLng(51.1801, 71.44598);
         }
